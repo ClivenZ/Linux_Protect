@@ -10,6 +10,7 @@
 #include<stdlib.h>
 #include<errno.h>
 #include<strings.h>
+#include<fcntl.h>
 
 int main(){
   while(1){
@@ -58,6 +59,17 @@ int main(){
       perror("fork error");
       return -1;
     }else if(pid == 0){
+      int i ;
+      int fd;
+      for(i = 0;i < argc;i++){
+        if(strcmp(argv[argc],">") == 0){
+          fd = open(argv[argc + 1],O_WRONLY | O_CREAT | O_TRUNC);
+          dup2(fd,1);
+        }else if(strcmp(argv[argc],">>") == 0){
+          fd = open(argv[argc+1],O_WRONLY | O_CREAT | O_TRUNC);
+          dup2(fd,1);
+        }
+      }
       execvp(argv[0],argv);
       exit(-1);
     }
