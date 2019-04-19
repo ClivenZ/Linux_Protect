@@ -11,7 +11,7 @@ int main(){
   for(i = 0;i <= 100;i++){
     arr[i] = '#';
     printf(RED);
-    printf("[%s]%s[%d][%c]\r",arr,"waiting...",i,lable[i%4]);
+    printf("[%s]%s[%d%%][%c]\r",arr,"waiting...",i,lable[i%4]);
     printf(WHITE);
     fflush(stdout);
     usleep(100000);
