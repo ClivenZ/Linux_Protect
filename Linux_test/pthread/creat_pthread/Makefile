@@ -1,2 +1,2 @@
 pthread:pthread.c
-	gcc $^ -o $@
+	gcc $^ -lpthread $@
