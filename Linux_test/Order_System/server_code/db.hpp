@@ -1,4 +1,4 @@
-#pragma once
+#pragma once 
 
 #include<cstdio>
 #include<cstdlib>
@@ -42,7 +42,7 @@ public:
       printf("DishTable Insert failed! %s\n",mysql_error(_mysql));
       return false;
     }
-    printf("DishTable Insert Ok!\n");
+    printf("DishTable Insert finished!\n");
     return true;
   }
   //const & 表示输入型参数
@@ -111,7 +111,7 @@ public:
 
   bool Update(const Json::Value& dish){
     char sql[1024 * 4] = {0};
-    sprintf(sql,"update dish_table SET name='%s',price=%d where dish_id='%d'",
+    sprintf(sql,"update dish_table SET name='%s',price=%d where dish_id=%d",
         dish["name"].asCString(),
         dish["price"].asInt(),
         dish["dish_id"].asInt());
@@ -179,7 +179,7 @@ public:
       order["table_id"] = row[1];
       order["time"] = row[2];
       order["dish_ids_str"] = row[3];
-      order["state"]=row[4];
+      order["state"] = atoi(row[4]);
       orders->append(order);
     }
     printf("Ordertable selectone OK!\n");
@@ -209,7 +209,4 @@ private:
 }; //end class OrderTable 
 
 }//end order_system 
-
-
-
 

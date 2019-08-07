@@ -1,6 +1,6 @@
-asd:asd.c
-	gcc $^ -o $@
+db_test:db_test.cpp db.hpp
+	gcc $^ -o $@  -L /usr/lib64/mysql -lmysqlclient -ljsoncpp -lpthread -g 
 
 .PHONY:clean
 clean:
-	rm asd
+	rm db_test
