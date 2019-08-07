@@ -12,7 +12,7 @@ static MYSQL* MySQLInit(){
   //创建句柄
   MYSQL* mysql = mysql_init(NULL);
   //建立链接
-  if(mysql_real_connect(mysql,"127.0.0.1","root","","order_system",3306,NULL,0) == NULL){
+  if(mysql_real_connect(mysql,"127.0.0.1","root","656260","order_system",3306,NULL,0) == NULL){
     printf("connect failed! %s\n",mysql_error(mysql));
     return NULL;
   }
@@ -34,8 +34,7 @@ public:
   //使用 JSON 作为函数参数
   bool Insert(const Json::Value& dish){
     char sql[1024 * 4] = {0};
-    sprintf(sql,"Insert into dish_table valuse(null,'%s',%d)"
-        ,dish["name"].asCString(),dish["price"].asInt());
+    sprintf(sql,"insert into dish_table values(null,'%s',%d)",dish["name"].asCString(),dish["price"].asInt());
     //
     int ret = mysql_query(_mysql,sql);
     if(ret != 0){
@@ -148,8 +147,8 @@ public:
     sprintf(sql,"insert into order_table values(null,'%s','%s','%s',%d)"
         ,order["table_id"].asCString()
         ,order["time"].asCString()
-        ,order["dishes"].asCString()
-        ,order["status"].asInt());
+        ,order["dish_ids"].asCString()
+        ,order["state"].asInt());
     int ret = mysql_query(_mysql,sql);
     if(ret != 0){
       printf("Ordertable insert failed! %s\n",mysql_error(_mysql));
