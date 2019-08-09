@@ -147,7 +147,7 @@ public:
     sprintf(sql,"insert into order_table values(null,'%s','%s','%s',%d)"
         ,order["table_id"].asCString()
         ,order["time"].asCString()
-        ,order["dish_ids"].asCString()
+        ,order["dish_ids_str"].asCString()
         ,order["state"].asInt());
     int ret = mysql_query(_mysql,sql);
     if(ret != 0){
@@ -192,7 +192,7 @@ public:
 //  }
   bool ChangeState(const Json::Value& order){
     char sql[1024 * 4] = {0};
-    sprintf(sql,"updata order_table set state=%d where order_id=%d"
+    sprintf(sql,"update order_table set state=%d where order_id=%d"
         ,order["state"].asInt()
         ,order["order_id"].asInt());
     int ret = mysql_query(_mysql,sql);
