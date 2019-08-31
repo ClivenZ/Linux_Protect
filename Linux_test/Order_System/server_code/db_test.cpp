@@ -1,5 +1,7 @@
 #include"db.hpp"
+#include<iostream>
 
+using namespace std;
 int main(){
   using namespace order_system;
   //class dish_table test
@@ -31,19 +33,21 @@ int main(){
 
 // order_table test 
 //
-    OrderTable order_table(mysql);
-    Json::Value order; 
-    order["table_id"] = "007";
-    order["time"] = "2019/08/01 23:00";
-    order["dish_ids"] = "1,2";
-    order["state"] = 0;
-    ret = order_table.Insert(order);
+   OrderTable order_table(mysql);
+//    Json::Value order; 
+//    order["table_id"] = "007";
+//    order["time"] = "2019/08/01 23:00";
+//    order["dish_ids"] = "1,2";
+//    order["state"] = 0;
+//.autorelabel    ret = order_table.Insert(order);
 //
 
 
 //selectall
-  //Json::Value orders;
-  //ret = order_table.SelectAll(&orders);
+  Json::Value orders;
+  ret = order_table.SelectAll(&orders);
+  std:: cout << "Selectall:"  << ret << endl;
+
 //changestaue
   //Json::Value state;
   //state["order_id"] = 3;

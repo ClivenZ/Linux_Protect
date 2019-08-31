@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小郑的快乐餐厅后台页面</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <!-- https://fonts.google.com/specimen/Roboto -->
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="css/templatemo-style.css">
+    
+</head>
+<body id="reportsPage">
+    <div class="" id="app">
+        <nav class="navbar navbar-expand-xl">
+            <div class="container h-100">
+                <a class="navbar-brand" href="index.html">
+                    <h1 class="tm-site-title mb-0">小郑的快乐餐厅</h1>
+                </a>
+                <a href="dish_root.html">
+                    <input type="button" value="菜品管理" style="width: 95px; height: 60px;" /> 
+                </a>
+            </div>
+        </nav>
+        <div class="container" id="app">
+            <div class="row" >
+            </div>
+            <!-- row -->
+              <div class="tm-bg-primary-dark tm-block tm-block-products">
+                <div class="tm-product-table-container">
+                  <table class="table table-hover tm-table-small tm-product-table" >
+                    <thead>
+                        <!-- 表头 -->
+                      <tr>
+                        <th scope="col">桌号</th>
+                        <th scope="col">下单时间</th>
+                        <th scope="col">菜品</th>
+                        <th scope="col">总价</th>
+                        <th scope="col">订单状态</th> 
+                        <th scope="col">已上菜</th> 
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 表格内 -->
+                      <tr v-for="order in orders">
+                        <td scope="col">{{order.table_id}}</td>
+                        <td scope="col">{{order.time}}</td>
+                        <td scope="col">{{order.dishes}}</td>
+                        <td scope="col">{{order.consume / 100}}元</td>
+                        <td scope="col">{{order.state}}</td>
+                        <th scope="row"><input type="checkbox" v-model="order.selected" /></th>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <a class="btn btn-primary btn-block text-uppercase mb-3" v-on:click="send()" >确认修改</a>
+        </div>
+        <footer class="tm-footer row tm-mt-small">
+            <div class="col-12 font-weight-light">
+                <p class="text-center text-white mb-0 px-4 small">
+                    Copyright &copy; <b>小郑</b>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <!-- https://jquery.com/download/ -->
+    <script src="js/moment.min.js"></script>
+    <!-- https://momentjs.com/ -->
+    <script src="js/Chart.min.js"></script>
+    <!-- http://www.chartjs.org/docs/latest/ -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- https://getbootstrap.com/ -->
+    <script src="js/tooplate-scripts.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = 'white';
+        let ctxLine,
+            ctxBar,
+            ctxPie,
+            optionsLine,
+            optionsBar,
+            optionsPie,
+            configLine,
+            configBar,
+            configPie,
+            lineChart,
+            barChart, 
+            pieChart;
+        // DOM is ready
+        $(function () {
+            drawLineChart(); // Line Chart
+            drawBarChart(); // Bar Chart
+            drawPieChart(); // Pie Chart
+
+            $(window).resize(function () {
+                updateLineChart();
+                updateBarChart();                
+            });
+        })
+    </script>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                orders:[
+                ]
+            },
+            methods:{
+                get_orders(){
+                    //从服务器上获取菜品数据
+                    //ajax -> http客户端
+                    $.ajax({
+                        type:"get",
+                        url:"/order",
+                        context:this, //指的是 Vue 对象
+                        success: function(data ,status){
+                            this.orders = data; //this -> context的值
+                        }
+                    });
+                },
+                send(){
+                    var get_order_id = 0;
+                    for(var index in this.orders){
+                        if(this.orders[index].selected){
+                            get_order_id = this.orders[index].order_id;
+                        }
+                    }    
+                    if(this.get_order_id == 0){
+                        alert("未选择！");
+                        return;
+                    }
+                    var body={
+                        state:1,
+                    }
+                    $.ajax({
+                        type:"put",
+                        url:"/order/" + get_order_id,
+                        data:JSON.stringify(body),
+                        contentType:"application/json",
+                        success:function(data, status){
+                            alert("修改成功！");
+                        }
+                    })
+                },
+            },
+            computed:{
+               
+            }
+        })
+        app.get_orders();
+    </script>
+</body>  
+</html>

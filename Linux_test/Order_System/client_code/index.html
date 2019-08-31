@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小郑的快乐餐厅点餐页面</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <!-- https://fonts.google.com/specimen/Roboto -->
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="css/templatemo-style.css">
+    
+</head>
+
+<body id="reportsPage">
+    <div class="" id="app">
+        <nav class="navbar navbar-expand-xl">
+            <div class="container h-100">
+                <a class="navbar-brand" href="index.html">
+                    <h1 class="tm-site-title mb-0">小郑的快乐餐厅</h1>
+                </a>
+            </div>
+        </nav>
+        <div class="container" id="app">
+            <div class="row" >
+                <div class="col">
+                    <p class="text-white mt-5 mb-5">{{author}}: {{calc}}元 </p> 
+                </div>
+            </div>
+            <!-- row -->
+              <div class="tm-bg-primary-dark tm-block tm-block-products">
+                <div class="tm-product-table-container">
+                  <table class="table table-hover tm-table-small tm-product-table" >
+                    <thead>
+                      <tr>
+                        <th  colspan="3" scope="col">菜名</th>
+                        <th  colspan="3" scope="col">价格</th>
+                        <th  scope="col">选择</th> 
+                        <th  scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="dish in dishes">
+                        <td colspan="3">{{dish.name}}</td>
+                        <td colspan="3">{{dish.price / 100}}元</td>
+                        <th scope="row"><input type="checkbox" v-model="dish.selected" /></th>
+                        <th scope="col">&nbsp;</th>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <a class="btn btn-primary btn-block text-uppercase mb-3" v-on:click="send()" >提交订单</a>
+        </div>
+        <footer class="tm-footer row tm-mt-small">
+            <div class="col-12 font-weight-light">
+                <p class="text-center text-white mb-0 px-4 small">
+                    Copyright &copy; <b>小郑</b>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <!-- https://jquery.com/download/ -->
+    <script src="js/moment.min.js"></script>
+    <!-- https://momentjs.com/ -->
+    <script src="js/Chart.min.js"></script>
+    <!-- http://www.chartjs.org/docs/latest/ -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- https://getbootstrap.com/ -->
+    <script src="js/tooplate-scripts.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = 'white';
+        let ctxLine,
+            ctxBar,
+            ctxPie,
+            optionsLine,
+            optionsBar,
+            optionsPie,
+            configLine,
+            configBar,
+            configPie,
+            lineChart,
+            barChart, 
+            pieChart;
+        // DOM is ready
+        $(function () {
+            drawLineChart(); // Line Chart
+            drawBarChart(); // Bar Chart
+            drawPieChart(); // Pie Chart
+
+            $(window).resize(function () {
+                updateLineChart();
+                updateBarChart();                
+            });
+        })
+    </script>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var table_id = '{{table_id}}';
+        var app = new Vue({
+            el: '#app',
+            data: {
+                author: '当前总价',
+                dishes:[
+                ]
+            },
+            methods:{
+                get_dishes(){
+                    //从服务器上获取菜品数据
+                    //ajax -> http客户端
+                    $.ajax({
+                        type:"get",
+                        url:"/dish",
+                        context:this, //指的是 Vue 对象
+                        success: function(data ,status){
+                            this.dishes = data; //this -> context的值
+                        }
+                    });
+                },
+                send(){
+                    //alert("")
+                    //1、校验
+                    if(this.calc == 0){
+                        alert("未选择菜品！");
+                        return;
+                    }
+                    //2、构造请求
+                    //http://39.107.118.86:9094/table_id?table_id=adf
+                    var dish_ids = [];
+                    for(var index in this.dishes){
+                        if(this.dishes[index].selected){
+                            dish_ids.push(this.dishes[index].dish_id);
+                        }
+                    }
+                    var body ={
+                        table_id:table_id,
+                        time:new Date().toLocaleDateString()+"-"+new Date().toLocaleTimeString(),
+                        dish_ids:dish_ids,
+                    }
+                    $.ajax({
+                        type:"post",
+                        url:"/order",
+                        data:JSON.stringify(body),
+                        contentType:"application/json",
+                        success:function(data, status){
+                            alert("下单成功！");
+                        }
+                    });
+                }
+            },
+            computed:{
+                calc(){
+                    var total_price = 0;
+                    for(var index in this.dishes){
+                        if(this.dishes[index].selected){
+                            total_price += this.dishes[index].price;
+                        }
+                    }
+                    return total_price / 100;
+                }
+            }
+        })
+        app.get_dishes();
+    </script>
+</body>  
+</html>

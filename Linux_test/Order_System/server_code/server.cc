@@ -2,6 +2,8 @@
 #include "db.hpp"
 #include <iostream>
 #include <jsoncpp/json/json.h>
+#include "util.hpp"
+
 const char* CONTENT_TYPE = "applicaton/json";
 
 MYSQL* mysql = NULL;
@@ -269,7 +271,18 @@ int main(){
       resp.set_content(writer.write(orders),CONTENT_TYPE);
       return;
   });
-    //设置静态文件目录
+  server.Get(("/table_id"),[](const Request& req,Response& resp){
+      //http://dsadas:9094?table_id
+      //获取table_id 填到页面
+      const std::string& table_id = req.get_param_value("table_id");
+      std::string html;
+      FileUtil::ReadFile("./wwwroot/index.html",&html);
+      std::string html_out;
+      StringUtil::Replace(html,"{{table_id}}",table_id,&html_out);
+      resp.set_content(html_out,"text/html");
+  });
+
+  //设置静态文件目录
     server.set_base_dir("./wwwroot");
     server.listen("0.0.0.0",9094);
   return 0;
